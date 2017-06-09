@@ -40,7 +40,7 @@ type Gist struct {
 
 type File struct {
 	gorm.Model
-	GistID uint `gorm:"index"`
+	GistID   uint `gorm:"index"`
 	Filename string
 	Content  string
 }

@@ -11,8 +11,14 @@ import (
 func TestGinEngine(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gofight.New()
-	r.GET("/").SetDebug(true).Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
-		assert.Equal(t, res.Code, http.StatusOK)
-		assert.Equal(t, res.Body.String(), "{\"msg\":\"hello world\",\"status\":\"ok\"}\n")
-	})
+	r.GET("/gist/1").
+		SetDebug(true).
+		Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
+			assert.Equal(t, res.Code, http.StatusOK)
+		})
+	r.GET("/api/hello").
+		SetDebug(true).
+		Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
+			assert.Equal(t, res.Code, http.StatusUnauthorized)
+		})
 }

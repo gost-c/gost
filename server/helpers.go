@@ -10,9 +10,9 @@ func FindUserByName(name string) *User {
 
 func CreateDefaultGist() *Gist {
 	return &Gist{
-		Pubilc:false,
-		Version: 1,
-		Hash: uuid.NewV4().String(),
+		Pubilc:      false,
+		Version:     1,
+		Hash:        uuid.NewV4().String(),
 		Description: "published by zcong1993/gost-cli",
 	}
 }

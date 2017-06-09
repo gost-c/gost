@@ -3,8 +3,8 @@ package server
 import (
 	"github.com/codehack/scrypto"
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"gopkg.in/appleboy/gin-jwt.v2"
+	"net/http"
 )
 
 func registerHandler(c *gin.Context) {
@@ -30,7 +30,7 @@ func registerHandler(c *gin.Context) {
 		//	return
 		//}
 		hash, _ := scrypto.Hash(json.Password)
-		if err := db.Save(&User{Username: json.Username, Password: hash}).Error; err !=nil {
+		if err := db.Save(&User{Username: json.Username, Password: hash}).Error; err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"code": "500",
 				"msg":  err.Error(),
@@ -59,8 +59,8 @@ func createHandler(c *gin.Context) {
 	user := FindUserByName(username)
 	gist := CreateDefaultGist()
 	gist.UserID = user.Model.ID
-	gist.Files = []*File{{Filename:"test.txt", Content:"xsxsxs"}, {Filename:"test1.txt", Content:"xsxsxsxsxs"}}
-	if err := db.Save(&gist).Error; err !=nil {
+	gist.Files = []*File{{Filename: "test.txt", Content: "xsxsxs"}, {Filename: "test1.txt", Content: "xsxsxsxsxs"}}
+	if err := db.Save(&gist).Error; err != nil {
 		c.JSON(500, gin.H{"code": 500, "msg": err.Error()})
 		return
 	}
