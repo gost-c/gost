@@ -4,6 +4,7 @@ import (
 	"github.com/codehack/scrypto"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"gopkg.in/appleboy/gin-jwt.v2"
 )
 
 func registerHandler(c *gin.Context) {
@@ -20,17 +21,22 @@ func registerHandler(c *gin.Context) {
 			})
 			return
 		}
-		var user User
-		db.First(&user, "name=?", json.Username)
-		if user.Username == json.Username {
+		//user := FindUserByName(json.Username)
+		//if user.Username == json.Username {
+		//	c.JSON(http.StatusOK, gin.H{
+		//		"code": "400",
+		//		"msg":  "Username exists!",
+		//	})
+		//	return
+		//}
+		hash, _ := scrypto.Hash(json.Password)
+		if err := db.Save(&User{Username: json.Username, Password: hash}).Error; err !=nil {
 			c.JSON(http.StatusOK, gin.H{
-				"code": "400",
-				"msg":  "Username exists!",
+				"code": "500",
+				"msg":  err.Error(),
 			})
 			return
 		}
-		hash, _ := scrypto.Hash(json.Password)
-		db.Create(&User{Username: json.Username, Password: hash})
 		c.JSON(http.StatusOK, gin.H{
 			"code": "200",
 			"msg":  "register success, please login",
@@ -47,6 +53,30 @@ func hello(c *gin.Context) {
 	c.JSON(200, gin.H{"msg": "hello world"})
 }
 
+func createHandler(c *gin.Context) {
+	jwtClaims := jwt.ExtractClaims(c)
+	username, _ := jwtClaims["id"].(string)
+	user := FindUserByName(username)
+	gist := CreateDefaultGist()
+	gist.UserID = user.Model.ID
+	gist.Files = []*File{{Filename:"test.txt", Content:"xsxsxs"}, {Filename:"test1.txt", Content:"xsxsxsxsxs"}}
+	if err := db.Save(&gist).Error; err !=nil {
+		c.JSON(500, gin.H{"code": 500, "msg": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"msg": user.Username, "id": user.Model.ID})
+}
+
+func showGistHandler(c *gin.Context) {
+	id := c.Param("hash")
+	var files []*File
+	gist := FindGistByHash(id)
+	db.Model(&gist).Related(&files)
+	gist.Files = files
+	//AppendFileToGist(&gist, &File{Filename:"xsxsxsxs", Content:"xsxsxsxsxs"})
+	c.JSON(200, gist)
+}
+
 func GinEngine() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -54,11 +84,13 @@ func GinEngine() *gin.Engine {
 	authMiddleware := GetAuthMiddleware()
 	r.POST("/register", registerHandler)
 	r.POST("/login", authMiddleware.LoginHandler)
+	r.GET("/gist/:hash", showGistHandler)
 	api := r.Group("/api")
 	api.Use(authMiddleware.MiddlewareFunc())
 	{
 		api.GET("/refresh_token", authMiddleware.RefreshHandler)
 		api.GET("/hello", hello)
+		api.POST("/create", createHandler)
 	}
 	return r
 }

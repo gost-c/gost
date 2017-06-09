@@ -16,7 +16,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	d.AutoMigrate(&User{}, &Gist{})
+	d.AutoMigrate(&User{}, &Gist{}, &File{})
 	db = d
 }
 
@@ -24,7 +24,7 @@ type User struct {
 	gorm.Model
 	Username string `gorm:"type:varchar(100);not null;unique"`
 	Password string `gorm:"size:100;not null"`
-	Email    string `gorm:"size:100;unique"`
+	Email    string `gorm:"size:100"`
 	Gists    []Gist
 }
 
@@ -34,11 +34,13 @@ type Gist struct {
 	Pubilc      bool
 	Description string
 	Version     uint
-	Hash        string `gorm:"type:char(100);index"`
-	Files       []File
+	Hash        string `gorm:"type:char(100);index;unique"`
+	Files       []*File
 }
 
 type File struct {
+	gorm.Model
+	GistID uint `gorm:"index"`
 	Filename string
 	Content  string
 }

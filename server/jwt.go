@@ -15,16 +15,14 @@ func GetAuthMiddleware() *jwt.GinJWTMiddleware {
 		Timeout:    time.Hour * 24 * 365,
 		MaxRefresh: time.Hour * 24 * 365,
 		Authenticator: func(userID string, password string, c *gin.Context) (string, bool) {
-			var user User
-			db.First(&user, "username=?", userID)
+			user := FindUserByName(userID)
 			if user.Username == userID && scrypto.Compare(password, user.Password) {
 				return userID, true
 			}
 			return userID, false
 		},
 		Authorizator: func(userID string, c *gin.Context) bool {
-			var user User
-			db.First(&user, "username=?", userID)
+			user := FindUserByName(userID)
 			if user.Username == userID {
 				return true
 			}
