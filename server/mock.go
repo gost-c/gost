@@ -8,13 +8,14 @@ import (
 
 func mockHandler(c *gin.Context) {
 	passwordHash, _ := scrypto.Hash("gostmock")
-	user := &User{Username: "gostmockuser", Password: string(passwordHash)}
+	user := User{Username: "gostmockuser", Password: string(passwordHash)}
 	db.Where(User{Username: "gostmockuser"}).FirstOrCreate(&user)
 	gist := createDefaultGist()
 	gist.UserID = user.Model.ID
+	gist.User = user
 	file1, _ := ioutil.ReadFile("main.go")
 	file2, _ := ioutil.ReadFile(".travis.yml")
-	gist.Files = []*File{{Filename: "main.go", Content: string(file1)}, {Filename: ".travis.yml", Content: string(file2)}}
+	gist.Files = []File{{Filename: "main.go", Content: string(file1)}, {Filename: ".travis.yml", Content: string(file2)}}
 	db.Where(Gist{UserID: user.Model.ID}).FirstOrCreate(&gist)
 	c.JSON(200, gin.H{
 		"code": 200,

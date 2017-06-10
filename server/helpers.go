@@ -5,10 +5,10 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-func findUserByName(name string) *User {
+func findUserByName(name string) User {
 	var user User
 	db.First(&user, "username=?", name)
-	return &user
+	return user
 }
 
 func getUserIDByName(name string) uint {
@@ -25,14 +25,14 @@ func createDefaultGist() *Gist {
 	}
 }
 
-func appendFileToGist(gist *Gist, file *File) {
+func appendFileToGist(gist Gist, file File) {
 	db.Model(gist).Association("Files").Append(file)
 }
 
-func findGistByHash(hash string) *Gist {
+func findGistByHash(hash string) Gist {
 	var gist Gist
 	db.First(&gist, "hash=?", hash)
-	return &gist
+	return gist
 }
 
 func createRes(code, msg string) *gin.H {

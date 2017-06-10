@@ -40,6 +40,7 @@ func createHandler(c *gin.Context) {
 		return
 	}
 	gist.UserID = user.Model.ID
+	gist.User = user
 	gist.Hash = uuid.NewV4().String()
 	if err := db.Save(&gist).Error; err != nil {
 		c.JSON(http.StatusOK, createRes("400", err.Error()))
@@ -50,14 +51,17 @@ func createHandler(c *gin.Context) {
 
 func showGistHandler(c *gin.Context) {
 	hash := c.Param("hash")
-	var files []*File
+	var files []File
+	var user User
 	gist := findGistByHash(hash)
 	db.Model(&gist).Related(&files)
 	if gist.Hash != hash {
 		c.JSON(http.StatusOK, createRes("400", "gist not exists!"))
 		return
 	}
+	db.First(&user, gist.UserID)
 	gist.Files = files
+	gist.User = user
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"msg":  gist,
