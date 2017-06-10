@@ -16,99 +16,92 @@ func registerHandler(c *gin.Context) {
 	var json Login
 	if c.BindJSON(&json) == nil {
 		if len(json.Username) < 6 || len(json.Username) > 20 || len(json.Password) < 6 {
-			c.JSON(http.StatusOK, CreateRes("400", "Username's len should > 6 and < 20 and password's len should > 6!"))
+			c.JSON(http.StatusOK, createRes("400", "Username's len should > 6 and < 20 and password's len should > 6!"))
 			return
 		}
 		hash, _ := scrypto.Hash(json.Password)
 		if err := db.Save(&User{Username: json.Username, Password: hash}).Error; err != nil {
-			c.JSON(http.StatusOK, CreateRes("400", err.Error()))
+			c.JSON(http.StatusOK, createRes("400", err.Error()))
 			return
 		}
-		c.JSON(http.StatusOK, CreateRes("200", "register success, please login"))
+		c.JSON(http.StatusOK, createRes("200", "register success, please login"))
 		return
 	}
-	c.JSON(http.StatusOK, CreateRes("400", "register error, username and password is required!"))
-}
-
-func hello(c *gin.Context) {
-	c.JSON(200, gin.H{"msg": "hello world"})
+	c.JSON(http.StatusOK, createRes("400", "register error, username and password is required!"))
 }
 
 func createHandler(c *gin.Context) {
 	jwtClaims := jwt.ExtractClaims(c)
 	username, _ := jwtClaims["id"].(string)
-	user := FindUserByName(username)
+	user := findUserByName(username)
 	var gist Gist
 	if c.BindJSON(&gist) != nil {
-		c.JSON(http.StatusOK, CreateRes("400", "post data error!"))
+		c.JSON(http.StatusOK, createRes("400", "post data error!"))
 		return
 	}
 	gist.UserID = user.Model.ID
 	gist.Hash = uuid.NewV4().String()
 	if err := db.Save(&gist).Error; err != nil {
-		c.JSON(http.StatusOK, CreateRes("400", err.Error()))
+		c.JSON(http.StatusOK, createRes("400", err.Error()))
 		return
 	}
-	c.JSON(http.StatusOK, CreateRes("200", "create success"))
+	c.JSON(http.StatusOK, createRes("200", "create success"))
 }
 
 func showGistHandler(c *gin.Context) {
-	id := c.Param("hash")
+	hash := c.Param("hash")
 	var files []*File
-	gist := FindGistByHash(id)
+	gist := findGistByHash(hash)
 	db.Model(&gist).Related(&files)
+	if gist.Hash != hash {
+		c.JSON(http.StatusOK, createRes("400", "gist not exists!"))
+		return
+	}
 	gist.Files = files
-	c.JSON(http.StatusOK, gist)
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  gist,
+	})
 }
 
 func deleteHandler(c *gin.Context) {
 	jwtClaims := jwt.ExtractClaims(c)
 	username, _ := jwtClaims["id"].(string)
-	userID := GetUserIDByName(username)
+	userID := getUserIDByName(username)
 	hash := c.Param("hash")
 	var gist Gist
 	db.First(&gist, "hash=?", hash)
 	if gist.Hash != hash {
-		c.JSON(http.StatusOK, CreateRes("400", "gist not exists!"))
+		c.JSON(http.StatusOK, createRes("400", "gist not exists!"))
 		return
 	}
 	if userID != gist.UserID {
-		c.JSON(http.StatusOK, CreateRes("400", "permission denied!"))
+		c.JSON(http.StatusOK, createRes("400", "permission denied!"))
 		return
 	}
 	if err := db.Delete(&gist).Error; err != nil {
-		c.JSON(http.StatusOK, CreateRes("400", "delete failed!"))
+		c.JSON(http.StatusOK, createRes("400", "delete failed!"))
 		return
 	}
-	c.JSON(http.StatusOK, CreateRes("200", "delete success!"))
+	c.JSON(http.StatusOK, createRes("200", "delete success!"))
 }
 
+// GinEngine provide gin Engine instance
 func GinEngine() *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
-	authMiddleware := GetAuthMiddleware()
+	authMiddleware := getAuthMiddleware()
 	r.POST("/register", registerHandler)
 	r.POST("/login", authMiddleware.LoginHandler)
 	r.GET("/gist/:hash", showGistHandler)
-	r.GET("/mock", MockHandler)
-	r.POST("/test", testHandler)
+	r.GET("/mock", mockHandler)
 	api := r.Group("/api")
 	api.Use(authMiddleware.MiddlewareFunc())
 	{
 		api.GET("/refresh_token", authMiddleware.RefreshHandler)
-		api.GET("/hello", hello)
 		api.POST("/create", createHandler)
 		api.GET("/delete/:hash", deleteHandler)
 	}
 	return r
-}
-
-func testHandler(c *gin.Context) {
-	var json Gist
-	if c.BindJSON(&json) != nil {
-		c.JSON(400, gin.H{"code": 400, "msg": "post data error!"})
-		return
-	}
-	c.JSON(200, CreateRes("200", "hello"))
 }

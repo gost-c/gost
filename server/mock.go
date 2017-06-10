@@ -6,11 +6,11 @@ import (
 	"io/ioutil"
 )
 
-func MockHandler(c *gin.Context) {
+func mockHandler(c *gin.Context) {
 	passwordHash, _ := scrypto.Hash("gostmock")
 	user := &User{Username: "gostmockuser", Password: string(passwordHash)}
 	db.Where(User{Username: "gostmockuser"}).FirstOrCreate(&user)
-	gist := CreateDefaultGist()
+	gist := createDefaultGist()
 	gist.UserID = user.Model.ID
 	file1, _ := ioutil.ReadFile("main.go")
 	file2, _ := ioutil.ReadFile(".travis.yml")

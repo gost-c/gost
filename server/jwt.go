@@ -8,21 +8,21 @@ import (
 	"time"
 )
 
-func GetAuthMiddleware() *jwt.GinJWTMiddleware {
+func getAuthMiddleware() *jwt.GinJWTMiddleware {
 	return &jwt.GinJWTMiddleware{
 		Realm:      "server",
 		Key:        []byte(os.Getenv("JWT_SECRET")),
 		Timeout:    time.Hour * 24 * 365,
 		MaxRefresh: time.Hour * 24 * 365,
 		Authenticator: func(userID string, password string, c *gin.Context) (string, bool) {
-			user := FindUserByName(userID)
+			user := findUserByName(userID)
 			if user.Username == userID && scrypto.Compare(password, user.Password) {
 				return userID, true
 			}
 			return userID, false
 		},
 		Authorizator: func(userID string, c *gin.Context) bool {
-			user := FindUserByName(userID)
+			user := findUserByName(userID)
 			if user.Username == userID {
 				return true
 			}

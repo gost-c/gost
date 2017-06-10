@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/mysql" // import mysql lib
 	"log"
 	"os"
 )
@@ -20,6 +20,7 @@ func init() {
 	db = d
 }
 
+// User struct is the model of User table
 type User struct {
 	gorm.Model
 	Username string `gorm:"type:varchar(100);not null;unique"`
@@ -28,6 +29,7 @@ type User struct {
 	Gists    []Gist
 }
 
+// Gist struct is the model of Gist table
 type Gist struct {
 	gorm.Model
 	UserID      uint    `gorm:"index"`
@@ -38,6 +40,7 @@ type Gist struct {
 	Files       []*File `form:"files" json:"files" binding:"required"`
 }
 
+// File struct is the model of File table
 type File struct {
 	gorm.Model
 	GistID   uint   `gorm:"index"`
