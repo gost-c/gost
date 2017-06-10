@@ -21,18 +21,10 @@ func registerHandler(c *gin.Context) {
 			})
 			return
 		}
-		//user := FindUserByName(json.Username)
-		//if user.Username == json.Username {
-		//	c.JSON(http.StatusOK, gin.H{
-		//		"code": "400",
-		//		"msg":  "Username exists!",
-		//	})
-		//	return
-		//}
 		hash, _ := scrypto.Hash(json.Password)
 		if err := db.Save(&User{Username: json.Username, Password: hash}).Error; err != nil {
 			c.JSON(http.StatusOK, gin.H{
-				"code": "500",
+				"code": "400",
 				"msg":  err.Error(),
 			})
 			return
@@ -44,7 +36,7 @@ func registerHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"code": "500",
+		"code": "400",
 		"msg":  "register error, username and password is required!",
 	})
 }
@@ -57,11 +49,14 @@ func createHandler(c *gin.Context) {
 	jwtClaims := jwt.ExtractClaims(c)
 	username, _ := jwtClaims["id"].(string)
 	user := FindUserByName(username)
-	gist := CreateDefaultGist()
+	var gist Gist
+	if c.BindJSON(&gist) != nil {
+		c.JSON(400, gin.H{"code": 400, "msg": "post data error!"})
+		return
+	}
 	gist.UserID = user.Model.ID
-	gist.Files = []*File{{Filename: "test.txt", Content: "xsxsxs"}, {Filename: "test1.txt", Content: "xsxsxsxsxs"}}
 	if err := db.Save(&gist).Error; err != nil {
-		c.JSON(500, gin.H{"code": 500, "msg": err.Error()})
+		c.JSON(400, gin.H{"code": 400, "msg": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"msg": user.Username, "id": user.Model.ID})
@@ -73,7 +68,6 @@ func showGistHandler(c *gin.Context) {
 	gist := FindGistByHash(id)
 	db.Model(&gist).Related(&files)
 	gist.Files = files
-	//AppendFileToGist(&gist, &File{Filename:"xsxsxsxs", Content:"xsxsxsxsxs"})
 	c.JSON(200, gist)
 }
 
@@ -85,6 +79,7 @@ func GinEngine() *gin.Engine {
 	r.POST("/register", registerHandler)
 	r.POST("/login", authMiddleware.LoginHandler)
 	r.GET("/gist/:hash", showGistHandler)
+	r.GET("/mock", MockHandler)
 	api := r.Group("/api")
 	api.Use(authMiddleware.MiddlewareFunc())
 	{

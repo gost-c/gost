@@ -31,16 +31,16 @@ type User struct {
 type Gist struct {
 	gorm.Model
 	UserID      uint `gorm:"index"`
-	Pubilc      bool
-	Description string
-	Version     uint
-	Hash        string `gorm:"type:char(100);index;unique"`
-	Files       []*File
+	Pubilc      bool `form:"public" json:"public" binding:"required"`
+	Description string `form:"description" json:"description" binding:"required"`
+	Version     uint `form:"version" json:"version" binding:"required"`
+	Hash        string `gorm:"type:char(100);index;unique" form:"hash" json:"hash" binding:"required"`
+	Files       []*File `form:"files" json:"files" binding:"required"`
 }
 
 type File struct {
 	gorm.Model
 	GistID   uint `gorm:"index"`
-	Filename string
-	Content  string
+	Filename string `form:"filename" json:"filename" binding:"required"`
+	Content  string `gorm:"type:text" form:"content" json:"content" binding:"required"`
 }
