@@ -6,6 +6,7 @@ import (
 	"github.com/satori/go.uuid"
 	"gopkg.in/appleboy/gin-jwt.v2"
 	"net/http"
+	"gopkg.in/gin-contrib/cors.v1"
 )
 
 func registerHandler(c *gin.Context) {
@@ -36,7 +37,8 @@ func createHandler(c *gin.Context) {
 	user := findUserByName(username)
 	var gist Gist
 	if c.BindJSON(&gist) != nil {
-		c.JSON(http.StatusOK, createRes("400", "post data error!"))
+		c.Header("Content-Type", "application/json")
+		c.JSON(http.StatusBadRequest, createRes("400", "post data error!"))
 		return
 	}
 	gist.UserID = user.Model.ID
@@ -46,7 +48,7 @@ func createHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, createRes("400", err.Error()))
 		return
 	}
-	c.JSON(http.StatusOK, createRes("200", "create success"))
+	c.JSON(http.StatusOK, createRes("200", gist.Hash))
 }
 
 func showGistHandler(c *gin.Context) {
@@ -93,6 +95,7 @@ func deleteHandler(c *gin.Context) {
 // GinEngine provide gin Engine instance
 func GinEngine() *gin.Engine {
 	r := gin.New()
+	r.Use(cors.Default())
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	authMiddleware := getAuthMiddleware()
