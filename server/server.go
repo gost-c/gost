@@ -80,6 +80,7 @@ func GinEngine() *gin.Engine {
 	r.POST("/login", authMiddleware.LoginHandler)
 	r.GET("/gist/:hash", showGistHandler)
 	r.GET("/mock", MockHandler)
+	r.GET("/mock", testHandler)
 	api := r.Group("/api")
 	api.Use(authMiddleware.MiddlewareFunc())
 	{
@@ -88,4 +89,18 @@ func GinEngine() *gin.Engine {
 		api.POST("/create", createHandler)
 	}
 	return r
+}
+
+func testHandler(c *gin.Context) {
+	type Test struct {
+		ID int
+		Name string `form:"name" json:"name" binding:"required"`
+		Age uint `form:"age" json:"age" binding:"required"`
+	}
+	var json Test
+	if c.BindJSON(&json) != nil {
+		c.JSON(400, gin.H{"code": 400, "msg": "post data error!"})
+		return
+	}
+	c.JSON(200, json)
 }
