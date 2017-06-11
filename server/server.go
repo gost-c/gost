@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
 	"gopkg.in/appleboy/gin-jwt.v2"
-	"net/http"
 	"gopkg.in/gin-contrib/cors.v1"
+	"net/http"
 )
 
 func registerHandler(c *gin.Context) {

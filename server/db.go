@@ -32,12 +32,12 @@ type User struct {
 // Gist struct is the model of Gist table
 type Gist struct {
 	gorm.Model
-	User User
-	UserID      uint    `gorm:"index"`
-	Public      bool    `form:"public" json:"public"`
-	Description string  `form:"description" json:"description" binding:"required"`
-	Version     uint    `form:"version" json:"version" binding:"required"`
-	Hash        string  `gorm:"type:char(100);index;unique" form:"hash" json:"hash"`
+	User        User
+	UserID      uint   `gorm:"index"`
+	Public      bool   `form:"public" json:"public"`
+	Description string `form:"description" json:"description" binding:"required"`
+	Version     uint   `form:"version" json:"version" binding:"required"`
+	Hash        string `gorm:"type:char(100);index;unique" form:"hash" json:"hash"`
 	Files       []File `form:"files" json:"files" binding:"required"`
 }
 
