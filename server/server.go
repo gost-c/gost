@@ -7,6 +7,7 @@ import (
 	"gopkg.in/appleboy/gin-jwt.v2"
 	"gopkg.in/gin-contrib/cors.v1"
 	"net/http"
+	"os"
 )
 
 func registerHandler(c *gin.Context) {
@@ -102,7 +103,9 @@ func GinEngine() *gin.Engine {
 	r.POST("/register", registerHandler)
 	r.POST("/login", authMiddleware.LoginHandler)
 	r.GET("/gist/:hash", showGistHandler)
-	r.GET("/mock", mockHandler)
+	if os.Getenv("GIN_MODE") == "debug" {
+		r.GET("/mock", mockHandler)
+	}
 	api := r.Group("/api")
 	api.Use(authMiddleware.MiddlewareFunc())
 	{
