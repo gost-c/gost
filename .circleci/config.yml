@@ -10,7 +10,7 @@ jobs:
           MYSQL_USER: root
           MYSQL_DATABASE: circle_test
 
-    working_directory: /go/src/github.com/zcong1993/gost
+    working_directory: /go/src/github.com/gost-c/gost
 
     steps:
       - checkout
