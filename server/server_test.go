@@ -16,7 +16,7 @@ func TestGinEngine(t *testing.T) {
 		Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			assert.Equal(t, res.Code, http.StatusOK)
 		})
-	r.GET("/api/hello").
+	r.POST("/api/create").
 		SetDebug(true).
 		Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			assert.Equal(t, res.Code, http.StatusUnauthorized)

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gitlab.com/zcong1993/gost/server"
+	"github.com/zcong1993/gost/server"
 	"log"
 	"os"
 )
