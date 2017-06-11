@@ -10,7 +10,7 @@ jobs:
           MYSQL_USER: root
           MYSQL_DATABASE: circle_test
 
-    working_directory: /go/src/github.com/zcong1993/simple-api
+    working_directory: /go/src/github.com/zcong1993/gost
 
     steps:
       - checkout
@@ -34,4 +34,6 @@ jobs:
           name: get test
           environment:
             MYSQL_DB_URL: "root:@/circle_test?charset=utf8&parseTime=True&loc=Local"
+            JWT_SECRET: "secret test"
+            GIN_MODE: debug
           command: go test ./...
