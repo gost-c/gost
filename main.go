@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/zcong1993/gost/server"
+	"github.com/gost-c/gost/server"
 	"log"
 	"os"
 )
