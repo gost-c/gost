@@ -130,7 +130,7 @@ func userGistsHandler(c *gin.Context) {
 		return
 	}
 	var gists []Gist
-	db.Where("user_id = ?", userID).Find(&gists)
+	db.Where("user_id = ?", userID).Order("created_at desc").Find(&gists)
 	if len(gists) == 0 {
 		c.JSON(http.StatusOK, createRes("400", "User has no gist here"))
 		return
