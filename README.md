@@ -8,6 +8,10 @@
 
 > simple gist like service in go
 
+## Docs
+
+see [http://gost-docs.congz.pw](http://gost-docs.congz.pw)
+
 ## License
 
 MIT &copy; zcong1993
