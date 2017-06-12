@@ -21,4 +21,25 @@ func TestGinEngine(t *testing.T) {
 		Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
 			assert.Equal(t, res.Code, http.StatusUnauthorized)
 		})
+	r.POST("/register").
+		SetDebug(true).
+		SetJSON(gofight.D{"username": "zcxsxs?", "password": "xsaxsaxsx"}).
+		Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
+			assert.Equal(t, res.Code, http.StatusOK)
+			assert.JSONEq(t, res.Body.String(), `{"code": "400", "msg": "Username length should > 6 and < 20, only support character, numbers and '_'"}`)
+		})
+	r.POST("/register").
+		SetDebug(true).
+		SetJSON(gofight.D{"username": "zcxsxs", "password": "xsa"}).
+		Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
+			assert.Equal(t, res.Code, http.StatusOK)
+			assert.JSONEq(t, res.Body.String(), `{"code": "400", "msg": "Password's length should > 6 and < 20"}`)
+		})
+	r.POST("/login").
+		SetDebug(true).
+		SetJSON(gofight.D{"username": "zcxsxs", "password": "xsa"}).
+		Run(GinEngine(), func(res gofight.HTTPResponse, req gofight.HTTPRequest) {
+			assert.Equal(t, res.Code, http.StatusUnauthorized)
+			assert.JSONEq(t, res.Body.String(), `{"code": 401, "message": "Incorrect Username / Password"}`)
+		})
 }

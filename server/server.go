@@ -8,6 +8,7 @@ import (
 	"gopkg.in/gin-contrib/cors.v1"
 	"net/http"
 	"os"
+	"regexp"
 )
 
 func registerHandler(c *gin.Context) {
@@ -17,8 +18,14 @@ func registerHandler(c *gin.Context) {
 	}
 	var json Login
 	if c.BindJSON(&json) == nil {
-		if len(json.Username) < 6 || len(json.Username) > 20 || len(json.Password) < 6 {
-			c.JSON(http.StatusOK, createRes("400", "Username's len should > 6 and < 20 and password's len should > 6!"))
+		var validUsername = regexp.MustCompile(`^[a-zA-Z0-9_]{6,20}$`)
+		var validaPassword = regexp.MustCompile(`^[a-zA-Z0-9!"#$%&'()*+,-./:;<=>?@\[\\\]^_{|} ~]{6,20}$`)
+		if !validUsername.Match([]byte(json.Username)) {
+			c.JSON(http.StatusOK, createRes("400", "Username length should > 6 and < 20, only support character, numbers and '_'"))
+			return
+		}
+		if !validaPassword.Match([]byte(json.Password)) {
+			c.JSON(http.StatusOK, createRes("400", "Password's length should > 6 and < 20"))
 			return
 		}
 		hash, _ := scrypto.Hash(json.Password)
