@@ -4,6 +4,7 @@ import (
 	"github.com/codehack/scrypto"
 	"github.com/gin-gonic/gin"
 	"github.com/satori/go.uuid"
+	"github.com/zcong1993/utils"
 	"gopkg.in/appleboy/gin-jwt.v2"
 	"gopkg.in/gin-contrib/cors.v1"
 	"net/http"
@@ -73,7 +74,7 @@ func showGistHandler(c *gin.Context) {
 	gist.Files = files
 	gist.User = user
 	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
+		"code": "200",
 		"msg":  gist,
 	})
 }
@@ -100,6 +101,51 @@ func deleteHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, createRes("200", "delete success!"))
 }
 
+func rawHandler(c *gin.Context) {
+	hash := c.Param("hash")
+	fileName := c.Param("file")
+
+	gist := findGistByHash(hash)
+	var files []File
+	count := db.Model(&gist).Association("Files").Find(&files).Count()
+	index := utils.SliceIndex(count, func(index int) bool {
+		if files[index].Filename == fileName {
+			return true
+		}
+		return false
+	})
+	if index < 0 {
+		c.String(http.StatusNotFound, "404 file not found")
+		return
+	}
+	c.String(http.StatusOK, files[index].Content)
+}
+
+func userGistsHandler(c *gin.Context) {
+	username := c.Param("name")
+	userID := getUserIDByName(username)
+	println(userID)
+	if userID < 1 {
+		c.JSON(http.StatusOK, createRes("400", "User not found"))
+		return
+	}
+	var gists []Gist
+	db.Where("user_id = ?", userID).Find(&gists)
+	if len(gists) == 0 {
+		c.JSON(http.StatusOK, createRes("400", "User has no gist here"))
+		return
+	}
+	for index, gist := range gists {
+		var files []File
+		db.Model(&gist).Related(&files)
+		gists[index].Files = files
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": "200",
+		"msg":  gists,
+	})
+}
+
 // GinEngine provide gin Engine instance
 func GinEngine() *gin.Engine {
 	r := gin.New()
@@ -110,6 +156,8 @@ func GinEngine() *gin.Engine {
 	r.POST("/register", registerHandler)
 	r.POST("/login", authMiddleware.LoginHandler)
 	r.GET("/gist/:hash", showGistHandler)
+	r.GET("/raw/:hash/:file", rawHandler)
+	r.GET("/user/:name", userGistsHandler)
 	if os.Getenv("GIN_MODE") == "debug" {
 		r.GET("/mock", mockHandler)
 	}
