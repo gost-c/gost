@@ -3,7 +3,7 @@ jobs:
   test:
     docker:
       # CircleCI Go images available at: https://hub.docker.com/r/circleci/golang/
-      - image: golang:1.9
+      - image: circleci/golang:1.9
       # CircleCI Mysql
       - image: circleci/mysql:latest
         environment:
