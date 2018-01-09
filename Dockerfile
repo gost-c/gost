@@ -8,7 +8,6 @@ COPY . $PROJECT
 WORKDIR ${PROJECT}
 
 RUN make install.dev \
- && make test \
  && CGO_ENABLED=0 make build
 
 FROM alpine:3.6
