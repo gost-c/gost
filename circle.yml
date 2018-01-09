@@ -28,7 +28,8 @@ jobs:
 
       - run:
            name: get deps
-           command: go get -t -d -v ./...
+           command: |
+              make install.dev
 
       - run:
           name: get test
@@ -36,7 +37,7 @@ jobs:
             MYSQL_DB_URL: "root:@/circle_test?charset=utf8&parseTime=True&loc=Local"
             JWT_SECRET: "secret test"
             GIN_MODE: debug
-          command: go test ./...
+          command: make test
   deploy:
       machine: true
       steps:
