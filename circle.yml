@@ -41,8 +41,6 @@ jobs:
       machine: true
       steps:
         - checkout
-        - restore_cache:
-            key: docker-build-cache-{{ .Branch }}-{{ .Revision }}
         - run:
             name: push to production
             command: |
@@ -50,19 +48,17 @@ jobs:
               docker info
               docker_build
               docker_push zcong/gost:latest
-    staging:
-      machine: true
-      steps:
-        - checkout
-        - restore_cache:
-            key: docker-build-cache-{{ .Branch }}-{{ .Revision }}
-        - run:
-            name: push to staging
-            command: |
-              source ci/prepare.sh
-              docker info
-              docker_build
-              docker_push zcong/gost:staging
+  staging:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: push to staging
+          command: |
+            source ci/prepare.sh
+            docker info
+            docker_build
+            docker_push zcong/gost:staging
 
 workflows:
   version: 2
