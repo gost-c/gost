@@ -77,20 +77,7 @@ func (u *User) Create() error {
 		log.Debugf("username exists, %s", u.Username)
 		return ErrUserAlreadyExists
 	}
-	item := map[string]*dynamodb.AttributeValue{
-		"id": {
-			S: &u.ID,
-		},
-		"username": {
-			S: &u.Username,
-		},
-		"password": {
-			S: &u.Password,
-		},
-		"joined": {
-			S: &u.Joined,
-		},
-	}
+	item := u.createUserItem()
 	log.Debugf("try create user %#v", u)
 	_, err = client.PutItem(&dynamodb.PutItemInput{
 		TableName: &table,
@@ -102,8 +89,8 @@ func (u *User) Create() error {
 
 func (u *User) Remove() error {
 	key := map[string]*dynamodb.AttributeValue{
-		"id": {
-			S: &u.ID,
+		"username": {
+			S: &u.Username,
 		},
 	}
 
@@ -151,4 +138,22 @@ func (u *User) Validate() (bool, error) {
 		return false, ErrPasswordInvalid
 	}
 	return true, nil
+}
+
+func (u *User) createUserItem() map[string]*dynamodb.AttributeValue {
+	item := map[string]*dynamodb.AttributeValue{
+		"id": {
+			S: &u.ID,
+		},
+		"username": {
+			S: &u.Username,
+		},
+		"password": {
+			S: &u.Password,
+		},
+		"joined": {
+			S: &u.Joined,
+		},
+	}
+	return item
 }

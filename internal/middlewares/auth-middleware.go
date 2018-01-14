@@ -1,11 +1,11 @@
 package middlewares
 
 import (
-	"github.com/kataras/iris"
+	"errors"
 	"github.com/gost-c/gost/internal/jwt"
 	"github.com/gost-c/gost/internal/utils"
-	"errors"
 	"github.com/gost-c/gost/logger"
+	"github.com/kataras/iris"
 )
 
 var (
