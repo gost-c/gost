@@ -11,18 +11,18 @@ import (
 )
 
 type Gost struct {
-	ID          string
-	Public      bool
-	Description string
-	Version     int
-	Files       []File `bson:"filesArray"`
-	CreatedAt   string
-	User        user.User
+	ID          string    `json:"id"`
+	Public      bool      `json:"public"`
+	Description string    `json:"description"`
+	Version     int       `json:"version"`
+	Files       []File    `bson:"filesArray" json:"files"`
+	CreatedAt   string    `json:"created_at"`
+	User        user.User `json:"user"`
 }
 
 type File struct {
-	Filename string
-	Content  string
+	Filename string `json:"filename"`
+	Content  string `json:"content"`
 }
 
 var (

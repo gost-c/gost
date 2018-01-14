@@ -1,7 +1,7 @@
 package types
 
 type Response struct {
-	Success bool
-	Message string
-	Data    interface{}
+	Success bool        `json:"success"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }

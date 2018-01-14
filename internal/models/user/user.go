@@ -14,15 +14,15 @@ import (
 // User is gost user
 type User struct {
 	// ID is uuid
-	ID string
+	ID string `json:"id"`
 	// Username username
-	Username string
+	Username string `json:"username"`
 	// Password password
 	Password string `json:"-"`
 	// Tokens tokens
 	Tokens []string `json:"-"`
 	// Joined joined
-	Joined string
+	Joined string `json:"joined"`
 }
 
 var (
