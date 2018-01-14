@@ -42,3 +42,11 @@ func ResponseErr(ctx iris.Context, err error) {
 	}
 	ctx.JSON(resp)
 }
+
+func ResponseData(ctx iris.Context, data string) {
+	resp := &types.Response{
+		Success: true,
+		Data:    data,
+	}
+	ctx.JSON(resp)
+}

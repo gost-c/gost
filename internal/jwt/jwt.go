@@ -6,6 +6,7 @@ import (
 	"github.com/gost-c/gost/internal/models"
 	"github.com/gost-c/gost/internal/utils"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
+	"github.com/kataras/iris"
 )
 
 var (
@@ -21,6 +22,10 @@ var (
 			return []byte(JwtKey), nil
 		},
 		SigningMethod: jwt.SigningMethodHS256,
+		ErrorHandler: func(ctx iris.Context, err string) {
+			ctx.StatusCode(iris.StatusUnauthorized)
+			utils.ResponseErr(ctx, errors.New(err))
+		},
 	})
 )
 
