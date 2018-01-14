@@ -1,17 +1,17 @@
 package jwt_test
 
 import (
-	"github.com/gost-c/gost/internal/jwt"
-	"testing"
-	"github.com/stretchr/testify/assert"
 	jwt2 "github.com/dgrijalva/jwt-go"
+	"github.com/gost-c/gost/internal/jwt"
 	"github.com/gost-c/gost/internal/models"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 var user = &models.User{
 	Username: "zcong",
 	Password: "password",
-	Joined: "2018-01-03",
+	Joined:   "2018-01-03",
 }
 
 func TestJwt(t *testing.T) {

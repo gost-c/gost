@@ -1,11 +1,11 @@
 package jwt
 
 import (
-	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gost-c/gost/internal/utils"
-	"github.com/gost-c/gost/internal/models"
 	"errors"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gost-c/gost/internal/models"
+	"github.com/gost-c/gost/internal/utils"
+	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 )
 
 var (
@@ -29,7 +29,7 @@ func JwtEncode(user *models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Username,
 		"password": user.Password,
-		"joined": user.Joined,
+		"joined":   user.Joined,
 	})
 
 	return token.SignedString([]byte(JwtKey))
@@ -47,4 +47,3 @@ func JwtDecode(token *jwt.Token) (*models.User, error) {
 	}
 	return &user, nil
 }
-
