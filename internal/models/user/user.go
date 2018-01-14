@@ -18,9 +18,9 @@ type User struct {
 	// Username username
 	Username string
 	// Password password
-	Password string
+	Password string `json:"-"`
 	// Tokens tokens
-	Tokens []string
+	Tokens []string `json:"-"`
 	// Joined joined
 	Joined string
 }
