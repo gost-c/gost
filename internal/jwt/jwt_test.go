@@ -3,12 +3,12 @@ package jwt_test
 import (
 	jwt2 "github.com/dgrijalva/jwt-go"
 	"github.com/gost-c/gost/internal/jwt"
-	"github.com/gost-c/gost/internal/models"
+	"github.com/gost-c/gost/internal/models/user"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-var user = &models.User{
+var user = &user.User{
 	Username: "zcong",
 	Password: "password",
 	Joined:   "2018-01-03",

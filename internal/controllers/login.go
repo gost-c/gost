@@ -3,17 +3,19 @@ package controllers
 import (
 	"errors"
 	"github.com/gost-c/gost/internal/jwt"
-	"github.com/gost-c/gost/internal/models"
+	"github.com/gost-c/gost/internal/models/user"
 	"github.com/gost-c/gost/internal/utils"
 	"github.com/kataras/iris"
 )
 
 var (
+	// ErrPasswordError is password error message
 	ErrPasswordError = errors.New("Password mismatch username.")
 )
 
+// LoginHandler is http handler for login router
 func LoginHandler(ctx iris.Context) {
-	user := models.User{}
+	user := user.User{}
 	err := ctx.ReadJSON(&user)
 	if err != nil {
 		utils.ResponseErr(ctx, err)

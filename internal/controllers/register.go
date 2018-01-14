@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/gost-c/gost/internal/models"
+	"github.com/gost-c/gost/internal/models/user"
 	"github.com/gost-c/gost/internal/utils"
 	"github.com/kataras/iris"
 )
@@ -11,7 +11,7 @@ var RegisterSuccess = "Register success, your username is %s. You can login late
 
 // RegisterHandler is handler for register
 func RegisterHandler(ctx iris.Context) {
-	user := models.User{}
+	user := user.User{}
 	err := ctx.ReadJSON(&user)
 	if err != nil {
 		utils.ResponseErr(ctx, err)

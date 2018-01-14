@@ -3,7 +3,7 @@ package jwt
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gost-c/gost/internal/models"
+	"github.com/gost-c/gost/internal/models/user"
 	"github.com/gost-c/gost/internal/utils"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
@@ -30,7 +30,7 @@ var (
 )
 
 // JwtEncode create a token from user
-func JwtEncode(user *models.User) (string, error) {
+func JwtEncode(user *user.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Username,
 		"password": user.Password,
@@ -41,8 +41,8 @@ func JwtEncode(user *models.User) (string, error) {
 }
 
 // JwtDecode get user from a jwt token
-func JwtDecode(token *jwt.Token) (*models.User, error) {
-	var user models.User
+func JwtDecode(token *jwt.Token) (*user.User, error) {
+	var user user.User
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		user.Username = claims["username"].(string)
 		user.Password = claims["password"].(string)

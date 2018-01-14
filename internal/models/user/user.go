@@ -1,12 +1,11 @@
-package models
+package user
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	"github.com/gost-c/gost/internal/utils"
 	"github.com/gost-c/gost/logger"
+	"github.com/gost-c/gost/mongo"
 	"github.com/pkg/errors"
 	"regexp"
 	"time"
@@ -28,7 +27,7 @@ type User struct {
 
 var (
 	table                = "users"
-	client               *dynamodb.DynamoDB
+	client               *mgo.Collection
 	log                  = logger.Logger
 	validUsername        = regexp.MustCompile(`^[a-zA-Z0-9_]{6,20}$`)
 	validaPassword       = regexp.MustCompile(`^[a-zA-Z0-9!"#$%&'()*+,-./:;<=>?@\[\\\]^_{|} ~]{6,20}$`)
@@ -46,11 +45,17 @@ type UserModel interface {
 }
 
 func init() {
-	ss, err := session.NewSession(aws.NewConfig())
+	client = mongo.Mongo.DB(table).C(table)
+	err := client.EnsureIndex(mgo.Index{
+		Key:        []string{"username"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("ensure table users index error: %v", err)
 	}
-	client = dynamodb.New(ss)
 }
 
 func NewUser(username, password string) *User {
@@ -68,66 +73,25 @@ func (u *User) New() *User {
 }
 
 func (u *User) Create() error {
-	err := u.GetUserByName()
-	if err != nil {
-		log.Debugf("find user error: %v", err)
-		return err
-	}
-	if u != nil {
-		log.Debugf("username exists, %s", u.Username)
-		return ErrUserAlreadyExists
-	}
-	item := u.createUserItem()
-	log.Debugf("try create user %#v", u)
-	_, err = client.PutItem(&dynamodb.PutItemInput{
-		TableName: &table,
-		Item:      item,
-	})
-
-	return err
+	log.Debugf("create user %#v", u)
+	return client.Insert(u)
 }
 
 func (u *User) Remove() error {
-	key := map[string]*dynamodb.AttributeValue{
-		"username": {
-			S: &u.Username,
-		},
-	}
-
-	_, err := client.DeleteItem(&dynamodb.DeleteItemInput{
-		TableName: &table,
-		Key:       key,
-	})
-
-	return err
+	return client.Remove(bson.M{"username": u.Username})
 }
 
 func (u *User) AddToken(token string) error {
-	return nil
+	return client.Update(bson.M{"username": u.Username}, bson.M{"$push": bson.M{"tokens": token}})
+}
+
+func (u *User) RemoveToken(token string) error {
+	return client.Update(bson.M{"username": u.Username}, bson.M{"$pull": bson.M{"tokens": token}})
 }
 
 func (u *User) GetUserByName() error {
-	key := map[string]*dynamodb.AttributeValue{
-		"username": {
-			S: &u.Username,
-		},
-	}
-
-	res, err := client.GetItem(&dynamodb.GetItemInput{
-		TableName:      &table,
-		Key:            key,
-		ConsistentRead: aws.Bool(true),
-	})
-
-	if err != nil {
-		return errors.Wrap(err, "getting item")
-	}
-
-	if err := dynamodbattribute.UnmarshalMap(res.Item, &u); err != nil {
-		return errors.Wrap(err, "unmarshaling item")
-	}
-
-	return nil
+	log.Debugf("try find user %#v", u)
+	return client.Find(bson.M{"username": u.Username}).One(u)
 }
 
 func (u *User) Validate() (bool, error) {
@@ -138,22 +102,4 @@ func (u *User) Validate() (bool, error) {
 		return false, ErrPasswordInvalid
 	}
 	return true, nil
-}
-
-func (u *User) createUserItem() map[string]*dynamodb.AttributeValue {
-	item := map[string]*dynamodb.AttributeValue{
-		"id": {
-			S: &u.ID,
-		},
-		"username": {
-			S: &u.Username,
-		},
-		"password": {
-			S: &u.Password,
-		},
-		"joined": {
-			S: &u.Joined,
-		},
-	}
-	return item
 }
