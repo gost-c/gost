@@ -12,15 +12,20 @@ import (
 )
 
 var (
-	ErrBadUser      = errors.New("Bad user.")
-	ErrBadGost      = errors.New("Bad gost.")
+	// ErrBadUser is error message for bad user
+	ErrBadUser = errors.New("Bad user.")
+	// ErrBadGost is error message for bad gost
+	ErrBadGost = errors.New("Bad gost.")
+	// ErrGostNotFound is error message for gost not found
 	ErrGostNotFound = errors.New("Gost not exists.")
-	ErrNotYourOwn   = errors.New("This gost is not owned to you.")
-	log             = logger.Logger
+	// ErrNotYourOwn is error message for user try to delete others gost
+	ErrNotYourOwn = errors.New("This gost is not owned to you.")
+	log           = logger.Logger
 )
 
+// PublishHandler is handler for create new gost
 func PublishHandler(ctx iris.Context) {
-	user, ok := ctx.Values().Get(middlewares.ContextKey).(*user.User)
+	u, ok := ctx.Values().Get(middlewares.ContextKey).(*user.User)
 	if !ok {
 		utils.ResponseErr(ctx, ErrBadUser)
 		return
@@ -36,7 +41,7 @@ func PublishHandler(ctx iris.Context) {
 		utils.ResponseErr(ctx, ErrBadGost)
 		return
 	}
-	g.WithUser(*user)
+	g.WithUser(*u)
 	err = g.Create()
 	if err != nil {
 		utils.ResponseErr(ctx, err)
@@ -45,6 +50,7 @@ func PublishHandler(ctx iris.Context) {
 	utils.ResponseData(ctx, g.ID)
 }
 
+// GetController is handler for get gost by id
 func GetController(ctx iris.Context) {
 	id := ctx.Params().Get("id")
 	var g gost.Gost
@@ -57,8 +63,9 @@ func GetController(ctx iris.Context) {
 	utils.ResponseData(ctx, g)
 }
 
+// DeleteController is handler for delete a gost
 func DeleteController(ctx iris.Context) {
-	user, ok := ctx.Values().Get(middlewares.ContextKey).(*user.User)
+	u, ok := ctx.Values().Get(middlewares.ContextKey).(*user.User)
 	if !ok {
 		utils.ResponseErr(ctx, ErrBadUser)
 		return
@@ -70,7 +77,7 @@ func DeleteController(ctx iris.Context) {
 		utils.ResponseErr(ctx, ErrGostNotFound)
 		return
 	}
-	if user.Username != g.User.Username {
+	if u.Username != g.User.Username {
 		utils.ResponseErr(ctx, ErrNotYourOwn)
 		return
 	}
@@ -82,14 +89,15 @@ func DeleteController(ctx iris.Context) {
 	utils.ResponseData(ctx, fmt.Sprintf("Gost remove success %s!", g.ID))
 }
 
+// UserOwnGostsController is handler show user own gosts (private)
 func UserOwnGostsController(ctx iris.Context) {
-	user, ok := ctx.Values().Get(middlewares.ContextKey).(*user.User)
+	u, ok := ctx.Values().Get(middlewares.ContextKey).(*user.User)
 	if !ok {
 		utils.ResponseErr(ctx, ErrBadUser)
 		return
 	}
 	var g gost.Gost
-	gosts, err := g.GetGostsByUsername(user.Username)
+	gosts, err := g.GetGostsByUsername(u.Username)
 	if err != nil {
 		utils.ResponseErr(ctx, err)
 		return
@@ -97,6 +105,7 @@ func UserOwnGostsController(ctx iris.Context) {
 	utils.ResponseData(ctx, gosts)
 }
 
+// UserGostsController is handler show a user's own gosts, (public)
 func UserGostsController(ctx iris.Context) {
 	username := ctx.Params().Get("username")
 	var g gost.Gost

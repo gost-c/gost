@@ -10,20 +10,32 @@ import (
 	"time"
 )
 
+// Gost is struct for gost
 type Gost struct {
-	ID          string    `json:"id"`
-	Public      bool      `json:"public"`
-	Description string    `json:"description"`
-	Version     int       `json:"version"`
-	Files       []File    `bson:"filesArray" json:"files"`
-	CreatedAt   string    `json:"created_at"`
-	User        user.User `json:"user"`
-	Status      int       `json:"-"`
+	// ID is gost uuid
+	ID string `json:"id"`
+	// Public is if the gost is public
+	Public bool `json:"public"`
+	// Description is gost description message
+	Description string `json:"description"`
+	// Version is gost version
+	Version int `json:"version"`
+	// Files is files contained by gost
+	Files []File `bson:"filesArray" json:"files"`
+	// CreatedAt is gost created time
+	CreatedAt string `json:"created_at"`
+	// User is gost owner user
+	User user.User `json:"user"`
+	// Status is gost status
+	Status int `json:"-"`
 }
 
+// File is gost file struct
 type File struct {
+	// Filename is the file name
 	Filename string `json:"filename"`
-	Content  string `json:"content"`
+	// Content is file content
+	Content string `json:"content"`
 }
 
 var (
@@ -33,8 +45,11 @@ var (
 )
 
 const (
+	// STATUSWELL mean gost can be show
 	STATUSWELL = 1 + iota
+	// STATUSDELETEDBYUSER mean gost is already deleted by user
 	STATUSDELETEDBYUSER
+	// STATUSDELETEDBYSYSTEM mean gost is already deleted by system
 	STATUSDELETEDBYSYSTEM
 )
 
@@ -52,6 +67,7 @@ func init() {
 	}
 }
 
+// NewGost is gost contructor
 func NewGost(description string, files []File, user user.User, version int, public bool) *Gost {
 	return &Gost{
 		ID:          utils.Uuid(),
@@ -65,6 +81,7 @@ func NewGost(description string, files []File, user user.User, version int, publ
 	}
 }
 
+// NewDefaultGost create gost with some default fields
 func NewDefaultGost(description string, files []File, user user.User) *Gost {
 	return &Gost{
 		ID:          utils.Uuid(),
@@ -78,6 +95,7 @@ func NewDefaultGost(description string, files []File, user user.User) *Gost {
 	}
 }
 
+// WithUser add author for gost and some init fields
 func (g *Gost) WithUser(user user.User) {
 	g.User = user
 	g.Public = true
@@ -87,11 +105,13 @@ func (g *Gost) WithUser(user user.User) {
 	g.Status = STATUSWELL
 }
 
+// Create method store gost to db
 func (g *Gost) Create() error {
 	log.Debugf("create gost %#v", g)
 	return client.Insert(g)
 }
 
+// Remove method soft delete a gost
 func (g *Gost) Remove(isUser bool) error {
 	status := STATUSDELETEDBYUSER
 	if !isUser {
@@ -100,17 +120,20 @@ func (g *Gost) Remove(isUser bool) error {
 	return client.Update(bson.M{"id": g.ID}, bson.M{"$set": bson.M{"status": status}})
 }
 
+// GetGostById find a gost from db by id
 func (g *Gost) GetGostById(id string) error {
 	return client.Find(bson.M{"id": id, "status": bson.M{"$lte": STATUSWELL}}).One(g)
 }
 
+// GetGostsByUsername find gosts from db by author name
 func (g *Gost) GetGostsByUsername(username string) ([]Gost, error) {
 	var gosts []Gost
-	err := client.Find(bson.M{"user.username": username}).All(&gosts)
+	err := client.Find(bson.M{"user.username": username, "status": bson.M{"$lte": STATUSWELL}}).All(&gosts)
 	log.Debugf("%s ----- %#v", username, gosts)
 	return gosts, err
 }
 
+// Validate make sure if the gost is validate
 func (g *Gost) Validate() bool {
 	if g.Description == "" {
 		return false

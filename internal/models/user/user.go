@@ -6,7 +6,6 @@ import (
 	"github.com/gost-c/gost/internal/utils"
 	"github.com/gost-c/gost/logger"
 	"github.com/gost-c/gost/mongo"
-	"github.com/pkg/errors"
 	"time"
 )
 
@@ -25,12 +24,12 @@ type User struct {
 }
 
 var (
-	table                = "users"
-	client               *mgo.Collection
-	log                  = logger.Logger
-	ErrUserAlreadyExists = errors.New("User already exists, please try another username.")
+	table  = "users"
+	client *mgo.Collection
+	log    = logger.Logger
 )
 
+// UserModel is user model interface
 type UserModel interface {
 	Create() error
 	Remove() error
@@ -52,6 +51,7 @@ func init() {
 	}
 }
 
+// NewUser create a user with certain username and password
 func NewUser(username, password string) *User {
 	hashedPass, _ := utils.HashPassword(password)
 	return &User{
@@ -62,27 +62,33 @@ func NewUser(username, password string) *User {
 	}
 }
 
+// New fill the default fields
 func (u *User) New() *User {
 	return NewUser(u.Username, u.Password)
 }
 
+// Create store user to db
 func (u *User) Create() error {
 	log.Debugf("create user %#v", u)
 	return client.Insert(u)
 }
 
+// Remove remove a user
 func (u *User) Remove() error {
 	return client.Remove(bson.M{"username": u.Username})
 }
 
+// AddToken add a token to user
 func (u *User) AddToken(token string) error {
 	return client.Update(bson.M{"username": u.Username}, bson.M{"$push": bson.M{"tokens": token}})
 }
 
+// RemoveToken remove a token from user
 func (u *User) RemoveToken(token string) error {
 	return client.Update(bson.M{"username": u.Username}, bson.M{"$pull": bson.M{"tokens": token}})
 }
 
+// GetUserByName can find a user by username
 func (u *User) GetUserByName() error {
 	log.Debugf("try find user %#v", u)
 	return client.Find(bson.M{"username": u.Username}).One(u)

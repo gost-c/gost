@@ -8,6 +8,7 @@ import (
 	"github.com/kataras/iris"
 )
 
+// RegisterSuccess is message for register success
 var RegisterSuccess = "Register success, your username is %s. You can login later."
 
 // RegisterHandler is handler for register

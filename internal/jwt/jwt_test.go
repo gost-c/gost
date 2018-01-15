@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-var user = &user.User{
+var u = &user.User{
 	Username: "zcong",
 	Password: "password",
 	Joined:   "2018-01-03",
@@ -16,7 +16,7 @@ var user = &user.User{
 
 func TestJwt(t *testing.T) {
 	assert2 := assert.New(t)
-	j, err := jwt.JwtEncode(user)
+	j, err := jwt.JwtEncode(u)
 	assert2.Nil(err, "Encode error should be nil")
 	assert2.NotEmpty(j, "Encode token should not empty")
 	keyfunc := func(token *jwt2.Token) (interface{}, error) {
@@ -26,5 +26,5 @@ func TestJwt(t *testing.T) {
 	assert2.Nil(err, "Token parse should not failed")
 	u, err := jwt.JwtDecode(tk)
 	assert2.Nil(err, "Decode error should be nil")
-	assert2.Equal(user, u, "Decode should be equal to encode user")
+	assert2.Equal(u, u, "Decode should be equal to encode user")
 }
