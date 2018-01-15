@@ -23,18 +23,22 @@ func GetEnvOrDefault(key, d string) string {
 	return v
 }
 
+// HashPassword is helper function to hash password
 func HashPassword(password string) (string, error) {
 	return scrypto.Hash(password)
 }
 
+// CheckPassword can compare password and hashed password
 func CheckPassword(pass, hashed string) bool {
 	return scrypto.Compare(pass, hashed)
 }
 
+// Uuid return a uuid
 func Uuid() string {
 	return ulid.MustNew(ulid.Now(), entropy).String()
 }
 
+// ResponseErr is a helper function response error message in json format
 func ResponseErr(ctx iris.Context, err error) {
 	resp := &types.Response{
 		Success: false,
@@ -43,6 +47,7 @@ func ResponseErr(ctx iris.Context, err error) {
 	ctx.JSON(resp)
 }
 
+// ResponseData is a helper function response data in json format
 func ResponseData(ctx iris.Context, data interface{}) {
 	resp := &types.Response{
 		Success: true,

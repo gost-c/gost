@@ -6,7 +6,10 @@ import (
 	"github.com/gost-c/gost/logger"
 )
 
+// Mongo is mongo db instance
 var Mongo *mgo.Session
+
+// DBName is mongo database name we used
 var DBName string
 
 func init() {

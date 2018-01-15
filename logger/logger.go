@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Logger is logger instance
 var Logger *logrus.Logger
 
 func init() {
