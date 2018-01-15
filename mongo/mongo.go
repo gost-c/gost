@@ -7,6 +7,7 @@ import (
 )
 
 var Mongo *mgo.Session
+var DBName string
 
 func init() {
 	session, err := mgo.Dial(utils.GetEnvOrDefault("MONGOURL", "localhost"))
@@ -15,4 +16,5 @@ func init() {
 	}
 	session.SetMode(mgo.Monotonic, true)
 	Mongo = session
+	DBName = utils.GetEnvOrDefault("DBNAME", "gost")
 }

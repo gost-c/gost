@@ -7,7 +7,6 @@ import (
 	"github.com/gost-c/gost/logger"
 	"github.com/gost-c/gost/mongo"
 	"github.com/pkg/errors"
-	"regexp"
 	"time"
 )
 
@@ -29,10 +28,6 @@ var (
 	table                = "users"
 	client               *mgo.Collection
 	log                  = logger.Logger
-	validUsername        = regexp.MustCompile(`^[a-zA-Z0-9_]{6,20}$`)
-	validaPassword       = regexp.MustCompile(`^[a-zA-Z0-9!"#$%&'()*+,-./:;<=>?@\[\\\]^_{|} ~]{6,20}$`)
-	ErrUsernameInvalid   = errors.New("Username length should > 6 and < 20, only support character, numbers and '_'")
-	ErrPasswordInvalid   = errors.New("Password's length should > 6 and < 20")
 	ErrUserAlreadyExists = errors.New("User already exists, please try another username.")
 )
 
@@ -41,11 +36,10 @@ type UserModel interface {
 	Remove() error
 	AddToken(token string) error
 	GetUserByName() error
-	Validate() (bool, error)
 }
 
 func init() {
-	client = mongo.Mongo.DB(table).C(table)
+	client = mongo.Mongo.DB(mongo.DBName).C(table)
 	err := client.EnsureIndex(mgo.Index{
 		Key:        []string{"username"},
 		Unique:     true,
@@ -92,14 +86,4 @@ func (u *User) RemoveToken(token string) error {
 func (u *User) GetUserByName() error {
 	log.Debugf("try find user %#v", u)
 	return client.Find(bson.M{"username": u.Username}).One(u)
-}
-
-func (u *User) Validate() (bool, error) {
-	if !validUsername.MatchString(u.Username) {
-		return false, ErrUsernameInvalid
-	}
-	if !validaPassword.MatchString(u.Password) {
-		return false, ErrPasswordInvalid
-	}
-	return true, nil
 }

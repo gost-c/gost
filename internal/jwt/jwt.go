@@ -34,7 +34,6 @@ func JwtEncode(user *user.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Username,
 		"password": user.Password,
-		"joined":   user.Joined,
 	})
 
 	return token.SignedString([]byte(JwtKey))
@@ -46,7 +45,6 @@ func JwtDecode(token *jwt.Token) (*user.User, error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		user.Username = claims["username"].(string)
 		user.Password = claims["password"].(string)
-		user.Joined = claims["joined"].(string)
 	} else {
 		return nil, ErrJwtDecode
 	}

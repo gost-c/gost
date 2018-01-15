@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gost-c/gost/internal/jwt"
 	"github.com/gost-c/gost/internal/models/user"
+	"github.com/gost-c/gost/internal/types"
 	"github.com/gost-c/gost/internal/utils"
 	"github.com/kataras/iris"
 )
@@ -15,25 +16,26 @@ var (
 
 // LoginHandler is http handler for login router
 func LoginHandler(ctx iris.Context) {
-	user := user.User{}
-	err := ctx.ReadJSON(&user)
+	userform := types.UserForm{}
+	err := ctx.ReadJSON(&userform)
 	if err != nil {
 		utils.ResponseErr(ctx, err)
 		return
 	}
-	password := user.Password
-	err = user.GetUserByName()
+	password := userform.Password
+	u := user.NewUser(userform.Username, userform.Password)
+	err = u.GetUserByName()
 	if err != nil {
 		utils.ResponseErr(ctx, err)
 		return
 	}
-	ok := utils.CheckPassword(password, user.Password)
+	ok := utils.CheckPassword(password, u.Password)
 	if !ok {
 		utils.ResponseErr(ctx, ErrPasswordError)
 		return
 	}
-	user.Password = password
-	token, err := jwt.JwtEncode(&user)
+	u.Password = password
+	token, err := jwt.JwtEncode(u)
 	if err != nil {
 		utils.ResponseErr(ctx, ErrPasswordError)
 		return

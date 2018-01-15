@@ -18,6 +18,7 @@ type Gost struct {
 	Files       []File    `bson:"filesArray" json:"files"`
 	CreatedAt   string    `json:"created_at"`
 	User        user.User `json:"user"`
+	Status      int       `json:"-"`
 }
 
 type File struct {
@@ -31,8 +32,14 @@ var (
 	log    = logger.Logger
 )
 
+const (
+	STATUSWELL = 1 + iota
+	STATUSDELETEDBYUSER
+	STATUSDELETEDBYSYSTEM
+)
+
 func init() {
-	client = mongo.Mongo.DB(table).C(table)
+	client = mongo.Mongo.DB(mongo.DBName).C(table)
 	err := client.EnsureIndex(mgo.Index{
 		Key:        []string{"id"},
 		Unique:     true,
@@ -54,6 +61,7 @@ func NewGost(description string, files []File, user user.User, version int, publ
 		Files:       files,
 		CreatedAt:   time.Now().String(),
 		User:        user,
+		Status:      STATUSWELL,
 	}
 }
 
@@ -66,6 +74,7 @@ func NewDefaultGost(description string, files []File, user user.User) *Gost {
 		Files:       files,
 		CreatedAt:   time.Now().String(),
 		User:        user,
+		Status:      STATUSWELL,
 	}
 }
 
@@ -75,6 +84,7 @@ func (g *Gost) WithUser(user user.User) {
 	g.CreatedAt = time.Now().String()
 	g.Version = 1
 	g.ID = utils.Uuid()
+	g.Status = STATUSWELL
 }
 
 func (g *Gost) Create() error {
@@ -82,12 +92,16 @@ func (g *Gost) Create() error {
 	return client.Insert(g)
 }
 
-func (g *Gost) Remove() error {
-	return client.Remove(bson.M{"id": g.ID})
+func (g *Gost) Remove(isUser bool) error {
+	status := STATUSDELETEDBYUSER
+	if !isUser {
+		status = STATUSDELETEDBYSYSTEM
+	}
+	return client.Update(bson.M{"id": g.ID}, bson.M{"$set": bson.M{"status": status}})
 }
 
 func (g *Gost) GetGostById(id string) error {
-	return client.Find(bson.M{"id": id}).One(g)
+	return client.Find(bson.M{"id": id, "status": bson.M{"$lte": STATUSWELL}}).One(g)
 }
 
 func (g *Gost) GetGostsByUsername(username string) ([]Gost, error) {

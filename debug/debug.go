@@ -12,6 +12,7 @@ import (
 
 var log = logger.Logger
 
+// LoadDebugRouters add some router for debug
 func LoadDebugRouters(app *iris.Application) {
 	app.Get("/debug/delete/{username:string}", func(ctx iris.Context) {
 		username := ctx.Params().Get("username")

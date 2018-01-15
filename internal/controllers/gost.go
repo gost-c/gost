@@ -74,7 +74,7 @@ func DeleteController(ctx iris.Context) {
 		utils.ResponseErr(ctx, ErrNotYourOwn)
 		return
 	}
-	err = g.Remove()
+	err = g.Remove(true)
 	if err != nil {
 		utils.ResponseErr(ctx, err)
 		return

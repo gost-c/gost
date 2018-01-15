@@ -19,7 +19,7 @@ func main() {
 	app.Get("/api/gosts/{username:string}", controllers.UserGostsController)
 
 	// private router
-	app.Post("/api/publish", jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware, controllers.PublishHandler)
+	app.Post("/api/gost", jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware, controllers.PublishHandler)
 	app.Delete("/api/gost/{id:string}", jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware, controllers.DeleteController)
 	app.Get("/api/user/gosts", jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware, controllers.UserOwnGostsController)
 
