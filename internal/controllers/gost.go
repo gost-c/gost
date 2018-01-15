@@ -108,6 +108,12 @@ func UserOwnGostsController(ctx iris.Context) {
 // UserGostsController is handler show a user's own gosts, (public)
 func UserGostsController(ctx iris.Context) {
 	username := ctx.Params().Get("username")
+	u := user.User{Username: username}
+	err := u.GetUserByName()
+	if err != nil {
+		utils.ResponseErr(ctx, err)
+		return
+	}
 	var g gost.Gost
 	gosts, err := g.GetGostsByUsername(username)
 	if err != nil {
@@ -115,4 +121,22 @@ func UserGostsController(ctx iris.Context) {
 		return
 	}
 	utils.ResponseData(ctx, gosts)
+}
+
+// RawGostHandler is handler for raw file
+func RawGostHandler(ctx iris.Context) {
+	id := ctx.Params().Get("id")
+	file := ctx.Params().Get("file")
+	var g gost.Gost
+	err := g.GetGostById(id)
+	if err != nil {
+		ctx.Text("Not found")
+		return
+	}
+	f := g.FindFile(file)
+	if f == nil {
+		ctx.Text("Not found")
+		return
+	}
+	ctx.Text(f.Content)
 }

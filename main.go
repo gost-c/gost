@@ -8,15 +8,25 @@ import (
 	"github.com/gost-c/gost/internal/utils"
 	"github.com/gost-c/gost/logger"
 	"github.com/kataras/iris"
+	"github.com/iris-contrib/middleware/cors"
 )
 
 func main() {
 	app := iris.Default()
+
+	crs := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"}, // allows everything, use that to change the hosts.
+		AllowCredentials: true,
+	})
+
+	app.Use(crs)
+
 	// public router
 	app.Post("/api/register", controllers.RegisterHandler)
 	app.Post("/api/login", controllers.LoginHandler)
 	app.Get("/api/gost/{id:string}", controllers.GetController)
 	app.Get("/api/gosts/{username:string}", controllers.UserGostsController)
+	app.Get("/api/raw/gost/{id:string}/{file:string}", controllers.RawGostHandler)
 
 	// private router
 	app.Post("/api/gost", jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware, controllers.PublishHandler)

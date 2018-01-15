@@ -58,7 +58,7 @@ func NewUser(username, password string) *User {
 		ID:       utils.Uuid(),
 		Username: username,
 		Password: hashedPass,
-		Joined:   time.Now().String(),
+		Joined:   time.Now().Format(time.RFC3339),
 	}
 }
 

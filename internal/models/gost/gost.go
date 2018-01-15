@@ -21,7 +21,7 @@ type Gost struct {
 	// Version is gost version
 	Version int `json:"version"`
 	// Files is files contained by gost
-	Files []File `bson:"filesArray" json:"files"`
+	Files []*File `bson:"filesArray" json:"files"`
 	// CreatedAt is gost created time
 	CreatedAt string `json:"created_at"`
 	// User is gost owner user
@@ -32,6 +32,8 @@ type Gost struct {
 
 // File is gost file struct
 type File struct {
+	// ID is uuid of file
+	ID string `json:"id"`
 	// Filename is the file name
 	Filename string `json:"filename"`
 	// Content is file content
@@ -68,41 +70,47 @@ func init() {
 }
 
 // NewGost is gost contructor
-func NewGost(description string, files []File, user user.User, version int, public bool) *Gost {
-	return &Gost{
+func NewGost(description string, files []*File, user user.User, version int, public bool) *Gost {
+	gost :=  &Gost{
 		ID:          utils.Uuid(),
 		Public:      public,
 		Description: description,
 		Version:     version,
 		Files:       files,
-		CreatedAt:   time.Now().String(),
+		CreatedAt:   time.Now().Format(time.RFC3339),
 		User:        user,
 		Status:      STATUSWELL,
 	}
+	gost.injectFileUuid()
+	return gost
 }
 
 // NewDefaultGost create gost with some default fields
-func NewDefaultGost(description string, files []File, user user.User) *Gost {
-	return &Gost{
+func NewDefaultGost(description string, files []*File, user user.User) *Gost {
+	gost :=  &Gost{
 		ID:          utils.Uuid(),
 		Public:      true,
 		Description: description,
 		Version:     1,
 		Files:       files,
-		CreatedAt:   time.Now().String(),
+		CreatedAt:   time.Now().Format(time.RFC3339),
 		User:        user,
 		Status:      STATUSWELL,
 	}
+	gost.injectFileUuid()
+	return gost
 }
 
 // WithUser add author for gost and some init fields
 func (g *Gost) WithUser(user user.User) {
 	g.User = user
 	g.Public = true
-	g.CreatedAt = time.Now().String()
+	g.CreatedAt = time.Now().Format(time.RFC3339)
 	g.Version = 1
 	g.ID = utils.Uuid()
 	g.Status = STATUSWELL
+	g.injectFileUuid()
+	log.Debugf("=========%#v", g.Files)
 }
 
 // Create method store gost to db
@@ -129,7 +137,6 @@ func (g *Gost) GetGostById(id string) error {
 func (g *Gost) GetGostsByUsername(username string) ([]Gost, error) {
 	var gosts []Gost
 	err := client.Find(bson.M{"user.username": username, "status": bson.M{"$lte": STATUSWELL}}).All(&gosts)
-	log.Debugf("%s ----- %#v", username, gosts)
 	return gosts, err
 }
 
@@ -147,4 +154,21 @@ func (g *Gost) Validate() bool {
 		}
 	}
 	return true
+}
+
+// FindFile find file from gost by file uuid
+func (g *Gost) FindFile(fileId string) *File {
+	for _, v := range g.Files {
+		log.Debug(v.ID)
+		if v.ID == fileId {
+			return v
+		}
+	}
+	return nil
+}
+
+func (g *Gost) injectFileUuid() {
+	for _, v := range g.Files {
+		v.ID = utils.Uuid()
+	}
 }
