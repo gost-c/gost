@@ -1,6 +1,6 @@
 FROM golang:latest AS build
 
-ENV PROJECT /go/src/gitlab.com/gost-c/gost
+ENV PROJECT /go/src/github.com/gost-c/gost
 
 RUN mkdir -p $PROJECT
 COPY . $PROJECT
@@ -12,7 +12,7 @@ RUN make install.dev \
 
 FROM alpine:3.6
 
-ENV PROJECT /go/src/gitlab.com/gost-c/gost
+ENV PROJECT /go/src/github.com/gost-c/gost
 
 WORKDIR /opt/gost
 

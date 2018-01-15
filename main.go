@@ -7,8 +7,8 @@ import (
 	"github.com/gost-c/gost/internal/middlewares"
 	"github.com/gost-c/gost/internal/utils"
 	"github.com/gost-c/gost/logger"
-	"github.com/kataras/iris"
 	"github.com/iris-contrib/middleware/cors"
+	"github.com/kataras/iris"
 )
 
 func main() {

@@ -71,7 +71,7 @@ func init() {
 
 // NewGost is gost contructor
 func NewGost(description string, files []*File, user user.User, version int, public bool) *Gost {
-	gost :=  &Gost{
+	gost := &Gost{
 		ID:          utils.Uuid(),
 		Public:      public,
 		Description: description,
@@ -87,7 +87,7 @@ func NewGost(description string, files []*File, user user.User, version int, pub
 
 // NewDefaultGost create gost with some default fields
 func NewDefaultGost(description string, files []*File, user user.User) *Gost {
-	gost :=  &Gost{
+	gost := &Gost{
 		ID:          utils.Uuid(),
 		Public:      true,
 		Description: description,
