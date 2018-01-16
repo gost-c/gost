@@ -16,6 +16,7 @@ var (
 
 // LoginHandler is http handler for login router
 func LoginHandler(ctx iris.Context) {
+	ctx.SetMaxRequestBodySize(1024)
 	userform := types.UserForm{}
 	err := ctx.ReadJSON(&userform)
 	if err != nil {

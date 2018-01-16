@@ -44,6 +44,8 @@ var (
 	table  = "gosts"
 	client *mgo.Collection
 	log    = logger.Logger
+	// MaxFilesCount is max files count allowed
+	MaxFilesCount = 10
 )
 
 const (
@@ -145,7 +147,7 @@ func (g *Gost) Validate() bool {
 	if g.Description == "" {
 		return false
 	}
-	if len(g.Files) == 0 {
+	if len(g.Files) == 0 || len(g.Files) > MaxFilesCount {
 		return false
 	}
 	for _, v := range g.Files {

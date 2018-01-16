@@ -13,18 +13,20 @@ import (
 
 var (
 	// ErrBadUser is error message for bad user
-	ErrBadUser = errors.New("Bad user.")
+	ErrBadUser = errors.New("Bad user. ")
 	// ErrBadGost is error message for bad gost
-	ErrBadGost = errors.New("Bad gost.")
+	ErrBadGost = errors.New("Bad gost, maybe you push too many files or file is too big. ")
 	// ErrGostNotFound is error message for gost not found
-	ErrGostNotFound = errors.New("Gost not exists.")
+	ErrGostNotFound = errors.New("Gost not exists. ")
 	// ErrNotYourOwn is error message for user try to delete others gost
-	ErrNotYourOwn = errors.New("This gost is not owned to you.")
+	ErrNotYourOwn = errors.New("This gost is not owned to you. ")
 	log           = logger.Logger
 )
 
 // PublishHandler is handler for create new gost
 func PublishHandler(ctx iris.Context) {
+	println(ctx.Request().ContentLength)
+	ctx.SetMaxRequestBodySize(32 << 20)
 	u, ok := ctx.Values().Get(middlewares.ContextKey).(*user.User)
 	if !ok {
 		utils.ResponseErr(ctx, ErrBadUser)

@@ -13,6 +13,7 @@ var RegisterSuccess = "Register success, your username is %s. You can login late
 
 // RegisterHandler is handler for register
 func RegisterHandler(ctx iris.Context) {
+	ctx.SetMaxRequestBodySize(1024 * 512)
 	userform := types.UserForm{}
 	err := ctx.ReadJSON(&userform)
 	if err != nil {

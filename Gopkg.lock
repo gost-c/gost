@@ -73,7 +73,7 @@
     "internal/sasl",
     "internal/scram"
   ]
-  revision = "5be15cc6a44937b6937a9487e1633f8a5fb25e4a"
+  revision = "896bbb89d21253a28cd5a7f8b81fe091410cb94d"
 
 [[projects]]
   branch = "master"
@@ -89,7 +89,10 @@
 
 [[projects]]
   name = "github.com/iris-contrib/middleware"
-  packages = ["jwt"]
+  packages = [
+    "cors",
+    "jwt"
+  ]
   revision = "1060fbb0ce08a72c50c612e8e5bdc8076c28343d"
   version = "v10"
 
@@ -221,16 +224,16 @@
   version = "v0.3.0"
 
 [[projects]]
-  name = "github.com/pkg/errors"
-  packages = ["."]
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
-
-[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/rs/cors"
+  packages = ["."]
+  revision = "7af7a1e09ba336d2ea14b1ce73bf693c6837dbf6"
+  version = "v1.2"
 
 [[projects]]
   name = "github.com/russross/blackfriday"
@@ -295,7 +298,7 @@
     "unix",
     "windows"
   ]
-  revision = "810d7000345868fc619eb81f46307107118f4ae1"
+  revision = "fff93fa7cd278d84afc205751523809c464168ab"
 
 [[projects]]
   branch = "v2"
@@ -306,6 +309,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4aab2e84c945eb4567be2928aa5a593fb16028436c4a5ff499727ee1c0e546cd"
+  inputs-digest = "f6e3c83469f9a6d91d0cc682f0dd01dba19824c320837ad41c0eb796869f0fe7"
   solver-name = "gps-cdcl"
   solver-version = 1
