@@ -30,3 +30,5 @@ zc
 test.sh
 bin
 vendor
+
+up.json

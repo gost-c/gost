@@ -16,3 +16,9 @@ build:
 	@echo	"===> run build"
 	@$(GO) build -o bin/gost main.go
 .PHONY: build
+
+# Run cmd for up tool build.
+build.up:
+	@echo	"===> run build up tools"
+	@$(GO) build -o bin/up cmd/up/main.go
+.PHONY: build.up

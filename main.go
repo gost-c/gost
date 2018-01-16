@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gost-c/gost/debug"
 	"github.com/gost-c/gost/internal/controllers"
 	"github.com/gost-c/gost/internal/jwt"
@@ -39,5 +40,8 @@ func main() {
 		debug.LoadDebugRouters(app)
 	}
 
-	app.Run(iris.Addr("localhost:9393"))
+	host := utils.GetEnvOrDefault("HOST", "localhost")
+	port := utils.GetEnvOrDefault("PORT", "9393")
+
+	app.Run(iris.Addr(fmt.Sprintf("%s:%s", host, port)))
 }
