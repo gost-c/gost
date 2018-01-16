@@ -40,8 +40,14 @@ func main() {
 		debug.LoadDebugRouters(app)
 	}
 
-	host := utils.GetEnvOrDefault("HOST", "localhost")
+	host := utils.GetEnvOrDefault("HOST", "")
 	port := utils.GetEnvOrDefault("PORT", "9393")
 
-	app.Run(iris.Addr(fmt.Sprintf("%s:%s", host, port)))
+	app.Run(
+		iris.Addr(fmt.Sprintf("%s:%s", host, port)),
+		// disables updates:
+		iris.WithoutVersionChecker,
+		// enables faster json serialization and more:
+		iris.WithOptimizations,
+	)
 }
