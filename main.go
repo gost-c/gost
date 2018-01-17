@@ -23,16 +23,21 @@ func main() {
 	app.Use(crs)
 
 	// public router
-	app.Post("/api/register", controllers.RegisterHandler)
-	app.Post("/api/login", controllers.LoginHandler)
-	app.Get("/api/gost/{id:string}", controllers.GetController)
-	app.Get("/api/gosts/{username:string}", controllers.UserGostsController)
-	app.Get("/api/raw/gost/{id:string}/{file:string}", controllers.RawGostHandler)
+	app.PartyFunc("/api", func(r iris.Party) {
+		r.Post("/register", controllers.RegisterHandler)
+		r.Post("/login", controllers.LoginHandler)
+		r.Get("/gost/{id:string}", controllers.GetController)
+		r.Get("/gosts/{username:string}", controllers.UserGostsController)
+		r.Get("/raw/gost/{id:string}/{file:string}", controllers.RawGostHandler)
+	})
 
 	// private router
-	app.Post("/api/gost", jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware, controllers.PublishHandler)
-	app.Delete("/api/gost/{id:string}", jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware, controllers.DeleteController)
-	app.Get("/api/user/gosts", jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware, controllers.UserOwnGostsController)
+	app.PartyFunc("/api", func(r iris.Party) {
+		r.Use(jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware)
+		app.Post("/gost", controllers.PublishHandler)
+		app.Delete("/gost/{id:string}", controllers.DeleteController)
+		app.Get("/user/gosts", controllers.UserOwnGostsController)
+	})
 
 	// if debug mode, load debug routers
 	if utils.GetEnvOrDefault("ENV", "prod") == "debug" {

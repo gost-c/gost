@@ -22,3 +22,11 @@ build.up:
 	@echo	"===> run build up tools"
 	@$(GO) build -o bin/up cmd/up/main.go
 .PHONY: build.up
+
+init.up:
+	./bin/up
+.PHONY: init.up
+
+install.up:
+	@curl -sf https://up.apex.sh/install | sh
+.PHONY: install.up

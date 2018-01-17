@@ -47,6 +47,23 @@ jobs:
             docker_build
             docker_push zcong/gost:staging
 
+  aws:
+    docker:
+      - image: circleci/golang:1.9
+    working_directory: /go/src/github.com/gost-c/gost
+    steps:
+      - checkout
+      - run:
+          name: deploy to aws
+          command: |
+            make install.dev
+            make install.up
+            make build.up
+            ./bin/up
+            up version
+            up deploy production
+            up url
+
 workflows:
   version: 2
   build-n-deploy:
@@ -64,6 +81,15 @@ workflows:
               ignore: /^v.*/
       - deploy:
           context: org-global
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - aws:
+          type: approval
           requires:
             - test
           filters:
