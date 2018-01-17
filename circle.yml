@@ -57,7 +57,7 @@ jobs:
           name: deploy to aws
           command: |
             make install.dev
-            make install.up
+            sudo curl -sf https://up.apex.sh/install | sh
             make build.up
             ./bin/up
             up version
