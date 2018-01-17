@@ -88,10 +88,18 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - aws:
+      - hold:
           type: approval
           requires:
             - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - aws:
+          requires:
+            - hold
           filters:
             tags:
               only: /^v.*/
