@@ -99,7 +99,7 @@ workflows:
 #              only: /^v.*/
 #            branches:
 #              ignore: /.*/
-      - aws:
+      - aws
 #          requires:
 #            - hold
 #          filters:
