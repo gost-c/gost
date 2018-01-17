@@ -56,54 +56,54 @@ jobs:
       - run:
           name: deploy to aws
           environment:
-            BINDIR: /go/bin
+            BINDIR: /go/src/github.com/gost-c/gost/bin
           command: |
             make install.dev
-            make install.up
             make build.up
-            ./bin/up
-            up version
-            up deploy production
-            up url
+            make install.up
+            ./bin/up-gen
+            ./bin/up version
+            ./bin/up deploy production
+            ./bin/up url
 
 workflows:
   version: 2
   build-n-deploy:
     jobs:
-      - test:
-          filters:
-            tags:
-              only: /.*/
-      - staging:
-          context: org-global
-          requires:
-            - test
-          filters:
-            tags:
-              ignore: /^v.*/
-      - deploy:
-          context: org-global
-          requires:
-            - test
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-      - hold:
-          type: approval
-          requires:
-            - test
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+#      - test:
+#          filters:
+#            tags:
+#              only: /.*/
+#      - staging:
+#          context: org-global
+#          requires:
+#            - test
+#          filters:
+#            tags:
+#              ignore: /^v.*/
+#      - deploy:
+#          context: org-global
+#          requires:
+#            - test
+#          filters:
+#            tags:
+#              only: /^v.*/
+#            branches:
+#              ignore: /.*/
+#      - hold:
+#          type: approval
+#          requires:
+#            - test
+#          filters:
+#            tags:
+#              only: /^v.*/
+#            branches:
+#              ignore: /.*/
       - aws:
-          requires:
-            - hold
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+#          requires:
+#            - hold
+#          filters:
+#            tags:
+#              only: /^v.*/
+#            branches:
+#              ignore: /.*/

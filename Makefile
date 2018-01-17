@@ -20,7 +20,7 @@ build:
 # Run cmd for up tool build.
 build.up:
 	@echo	"===> run build up tools"
-	@$(GO) build -o bin/up cmd/up/main.go
+	@$(GO) build -o bin/up-gen cmd/up/main.go
 .PHONY: build.up
 
 init.up:
