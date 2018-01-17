@@ -55,9 +55,11 @@ jobs:
       - checkout
       - run:
           name: deploy to aws
+          environment:
+            BINDIR: /go/bin
           command: |
             make install.dev
-            sudo curl -sf https://up.apex.sh/install | sh
+            make install.up
             make build.up
             ./bin/up
             up version
