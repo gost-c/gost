@@ -9,12 +9,12 @@
 ## Docker
 
 ```sh
-# run a mysql
-$ docker run --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=true -v `pwd`/create-gost.sql:/docker-entrypoint-initdb.d/create-db.sql  -d mysql
+# run a mongo
+$ docker run --name mongo -d mongo
 # start services
-$ docker run --name gost -d --link mysql:mysql -p 8000:8000 -e JWT_SECRET=secret \
--e GIN_MODE=debug \
--e MYSQL_DB_URL="root:@tcp(mysql:3306)/gost?charset=utf8&parseTime=True&loc=Local" \
+$ docker run --name gost -d --link mongo:mongo -p 8000:9393 -e JWTKEY=secret \
+-e ENV=debug \
+-e MONGOURL="mongo" \
 zcong/gost
 ```
 

@@ -12,7 +12,7 @@ var (
 	// ContextKey is AuthMiddleware user context key
 	ContextKey = "gostuser"
 	// ErrPasswordMismatch is password mismatch error
-	ErrPasswordMismatch = errors.New("Password mismatch user.")
+	ErrPasswordMismatch = errors.New("Password mismatch user. ")
 )
 
 // AuthMiddleware auth user, if failed response 401, success set user to context ContextKey
