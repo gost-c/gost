@@ -34,9 +34,9 @@ func main() {
 	// private router
 	app.PartyFunc("/api", func(r iris.Party) {
 		r.Use(jwt.JwtMiddleware.Serve, middlewares.AuthMiddleware)
-		app.Post("/gost", controllers.PublishHandler)
-		app.Delete("/gost/{id:string}", controllers.DeleteController)
-		app.Get("/user/gosts", controllers.UserOwnGostsController)
+		r.Post("/gost", controllers.PublishHandler)
+		r.Delete("/gost/{id:string}", controllers.DeleteController)
+		r.Get("/user/gosts", controllers.UserOwnGostsController)
 	})
 
 	// if debug mode, load debug routers
