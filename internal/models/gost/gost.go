@@ -142,6 +142,15 @@ func (g *Gost) GetGostsByUsername(username string) ([]Gost, error) {
 	return gosts, err
 }
 
+// IgnoreEmpty will ignore empty file
+func (g *Gost) IgnoreEmpty() {
+	for i, v := range g.Files {
+		if v.Content == "" {
+			g.Files = append(g.Files[:i], g.Files[i+1:]...)
+		}
+	}
+}
+
 // Validate make sure if the gost is validate
 func (g *Gost) Validate() bool {
 	if g.Description == "" {
