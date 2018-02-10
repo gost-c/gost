@@ -34,3 +34,4 @@ vendor
 dev
 
 up.json
+gin-bin
