@@ -32,3 +32,4 @@ bin
 vendor
 
 up.json
+gin-bin
