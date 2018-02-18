@@ -1,4 +1,4 @@
-FROM golang:latest AS build
+FROM golang:latest@sha256:790b60bca8ede142e387d37f0f61e72ffae8bbc6a7d30387b5d23cb5ccb34324 AS build
 
 ENV PROJECT /go/src/github.com/gost-c/gost
 # install xz
@@ -21,7 +21,7 @@ RUN make install.dev \
 RUN strip --strip-unneeded ./bin/gost
 RUN upx ./bin/gost
 
-FROM alpine:3.7
+FROM alpine:3.7@sha256:7df6db5aa61ae9480f52f0b3a06a140ab98d427f86d8d5de0bedab9b8df6b1c0
 
 ENV PROJECT /go/src/github.com/gost-c/gost
 
