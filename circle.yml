@@ -63,7 +63,7 @@ jobs:
             make install.up
             ./bin/up-gen
             ./bin/up version
-            ./bin/up deploy production
+            ./bin/up deploy production -v
             ./bin/up url
 
 workflows:

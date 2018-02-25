@@ -24,7 +24,7 @@ build.up:
 .PHONY: build.up
 
 init.up:
-	./bin/up
+	./bin/up-gen
 .PHONY: init.up
 
 install.up:
