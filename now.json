@@ -1,0 +1,11 @@
+{
+  "name": "gost-server",
+  "alias": [
+    "gost.v2.zcong.moe"
+  ],
+  "env": {
+    "MONGOURL": "@mongo",
+    "DBNAME": "gost",
+    "JWTKEY": "@jwt"
+  }
+}
