@@ -25,13 +25,13 @@
 
 zc
 
-bin
-
 .env
 
+test.sh
+bin
 vendor
-
-dev
 
 up.json
 gin-bin
+server
+.envrc
