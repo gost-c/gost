@@ -1,7 +1,7 @@
 github.com/BurntSushi/toml v0.3.0 h1:e1/Ivsx3Z0FVTV0NSOv/aVgbUWyQuzj7DDnFblkRvsY=
 github.com/BurntSushi/toml v0.3.0/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/Joker/jade v0.7.0 h1:9sEpF/GAfkn0D0n+x8/SVGpxvdjIStsyPaTvtXW6z/U=
-github.com/Joker/jade v0.7.0/go.mod h1:R1kvvouJogE6SnKqO5Qw3j2rCE2T9HjIWaFeSET/qMQ=
+github.com/Joker/jade v0.0.0-20161230135920-35b3f5bdbcc9 h1:PwV+oifGe9gIlNAJBGI+/oUyqyh/Lg0aPCuJZ646+x4=
+github.com/Joker/jade v0.0.0-20161230135920-35b3f5bdbcc9/go.mod h1:R1kvvouJogE6SnKqO5Qw3j2rCE2T9HjIWaFeSET/qMQ=
 github.com/aymerick/raymond v0.0.0-20161209220724-72acac220747 h1:gu88ZN3sXG5+1mH0W4Ty00jzHA044ND3ogxmJNN6Rik=
 github.com/aymerick/raymond v0.0.0-20161209220724-72acac220747/go.mod h1:osfaiScAUVup+UC9Nfq76eWqDhXlp+4UYaA8uhTBO6g=
 github.com/codehack/scrypto v0.0.0-20151016065608-927801707fa1 h1:uIJFhnm9hcoa9Cll79mYpydTVFDH1vUGOhRxpE9BxNA=

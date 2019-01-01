@@ -2,7 +2,7 @@ module github.com/gost-c/gost
 
 require (
 	github.com/BurntSushi/toml v0.3.0
-	github.com/Joker/jade v0.7.0
+	github.com/Joker/jade v0.0.0-20161230135920-35b3f5bdbcc9
 	github.com/aymerick/raymond v0.0.0-20161209220724-72acac220747
 	github.com/codehack/scrypto v0.0.0-20151016065608-927801707fa1
 	github.com/davecgh/go-spew v1.1.0
