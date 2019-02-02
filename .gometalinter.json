@@ -1,0 +1,31 @@
+{
+    "Vendor": true,
+    "Deadline": "5m",
+    "Concurrency": 2,
+    "Linters": {
+      "gofmt": {"Command": "gofmt -l -s -w"},
+      "goimports": {"Command": "goimports -l -w"}
+    },
+    "Exclude": [
+
+    ],
+    "Enable": [
+      "deadcode",
+      "errcheck",
+      "goconst",
+      "gofmt",
+      "goimports",
+      "golint",
+      "gosimple",
+      "gotypex",
+      "ineffassign",
+      "megacheck",
+      "misspell",
+      "structcheck",
+      "unconvert",
+      "unparam",
+      "varcheck",
+      "vet",
+      "vetshadow"
+    ]
+  }
